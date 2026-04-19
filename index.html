@@ -105,6 +105,7 @@
       border-radius: 999px;
       font-weight: 600;
       transition: 0.25s ease;
+      cursor: pointer;
     }
 
     .btn-primary {
@@ -272,6 +273,121 @@
       justify-content: space-between;
       align-items: center;
       font-weight: 600;
+      gap: 12px;
+    }
+
+    .price-row .btn {
+      white-space: nowrap;
+    }
+
+    .cart-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    }
+
+    .cart-empty {
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .cart-items {
+      list-style: none;
+      display: grid;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .cart-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      background: #fff;
+    }
+
+    .cart-item img {
+      width: 72px;
+      height: 72px;
+      border-radius: 10px;
+    }
+
+    .cart-item h4 {
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .cart-item p {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .cart-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .qty-chip {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.9rem;
+      min-width: 56px;
+      text-align: center;
+    }
+
+    .icon-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      border-radius: 999px;
+      width: 32px;
+      height: 32px;
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .remove-btn {
+      border: 1px solid #f0c6c6;
+      background: #fff6f6;
+      color: #a62d2d;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.84rem;
+      cursor: pointer;
+    }
+
+    .cart-summary {
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .summary-row strong {
+      font-size: 1.06rem;
+    }
+
+    .cart-summary-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .benefits {
@@ -362,6 +478,14 @@
         flex-direction: column;
         align-items: flex-start;
       }
+
+      .cart-item {
+        grid-template-columns: 1fr;
+      }
+
+      .cart-actions {
+        justify-content: flex-start;
+      }
     }
   </style>
 </head>
@@ -372,6 +496,7 @@
       <nav class="nav-links" aria-label="Primary navigation">
         <a href="#collections">Collections</a>
         <a href="#bestsellers">Best Sellers</a>
+        <a href="#cart">Cart (<span id="cart-count">0</span>)</a>
         <a href="#benefits">Why Us</a>
         <a href="#newsletter" class="btn btn-outline">Join Club</a>
       </nav>
@@ -443,7 +568,7 @@
             <p>Ultra-soft cotton blend with a relaxed silhouette.</p>
             <div class="price-row">
               <span>$49.00</span>
-              <a href="#" class="btn btn-outline">Add to Cart</a>
+              <button type="button" class="btn btn-outline add-to-cart" data-id="oversized-hoodie" data-name="Oversized Hoodie" data-price="49" data-image="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=300&q=80">Add to Cart</button>
             </div>
           </div>
         </article>
@@ -454,7 +579,7 @@
             <p>Sharp, modern cut perfect for workdays and evenings out.</p>
             <div class="price-row">
               <span>$89.00</span>
-              <a href="#" class="btn btn-outline">Add to Cart</a>
+              <button type="button" class="btn btn-outline add-to-cart" data-id="tailored-blazer" data-name="Tailored Blazer" data-price="89" data-image="https://images.unsplash.com/photo-1475180098004-ca77a66827be?auto=format&fit=crop&w=300&q=80">Add to Cart</button>
             </div>
           </div>
         </article>
@@ -465,10 +590,35 @@
             <p>Three premium tees designed for a flawless daily fit.</p>
             <div class="price-row">
               <span>$39.00</span>
-              <a href="#" class="btn btn-outline">Add to Cart</a>
+              <button type="button" class="btn btn-outline add-to-cart" data-id="everyday-tee-pack" data-name="Everyday Tee Pack" data-price="39" data-image="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=300&q=80">Add to Cart</button>
             </div>
           </div>
         </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="cart" class="section">
+    <div class="container">
+      <h2 class="section-title">Your Cart</h2>
+      <p class="section-subtitle">Review, update quantities, remove items, or clear the cart before checkout.</p>
+      <div class="cart-panel">
+        <p id="cart-empty" class="cart-empty">Your cart is empty.</p>
+        <ul id="cart-items" class="cart-items" aria-live="polite"></ul>
+        <div class="cart-summary">
+          <div class="summary-row">
+            <span>Total Items</span>
+            <strong id="cart-total-items">0</strong>
+          </div>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <strong id="cart-subtotal">$0.00</strong>
+          </div>
+          <div class="cart-summary-actions">
+            <button type="button" id="clear-cart" class="btn btn-outline">Clear Cart</button>
+            <a href="#newsletter" class="btn btn-primary">Proceed to Checkout</a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -523,5 +673,148 @@
       © 2026 StyleNest. All rights reserved.
     </div>
   </footer>
+  <script>
+    (function () {
+      const CART_STORAGE_KEY = "stylenest-cart-v1";
+      const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+
+      const cartCountEl = document.getElementById("cart-count");
+      const cartTotalItemsEl = document.getElementById("cart-total-items");
+      const cartSubtotalEl = document.getElementById("cart-subtotal");
+      const cartEmptyEl = document.getElementById("cart-empty");
+      const cartItemsEl = document.getElementById("cart-items");
+      const clearCartBtn = document.getElementById("clear-cart");
+
+      let cart = loadCart();
+
+      function loadCart() {
+        try {
+          const raw = localStorage.getItem(CART_STORAGE_KEY);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function saveCart() {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+      }
+
+      function addItem(product) {
+        const existing = cart.find((item) => item.id === product.id);
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            qty: 1
+          });
+        }
+        saveCart();
+        renderCart();
+      }
+
+      function updateItemQuantity(id, nextQty) {
+        if (nextQty <= 0) {
+          removeItem(id);
+          return;
+        }
+        const existing = cart.find((item) => item.id === id);
+        if (!existing) return;
+        existing.qty = nextQty;
+        saveCart();
+        renderCart();
+      }
+
+      function removeItem(id) {
+        cart = cart.filter((item) => item.id !== id);
+        saveCart();
+        renderCart();
+      }
+
+      function clearCart() {
+        cart = [];
+        saveCart();
+        renderCart();
+      }
+
+      function calculateTotals() {
+        return cart.reduce(
+          (acc, item) => {
+            acc.count += item.qty;
+            acc.subtotal += item.qty * item.price;
+            return acc;
+          },
+          { count: 0, subtotal: 0 }
+        );
+      }
+
+      function renderCart() {
+        const totals = calculateTotals();
+        cartCountEl.textContent = String(totals.count);
+        cartTotalItemsEl.textContent = String(totals.count);
+        cartSubtotalEl.textContent = money.format(totals.subtotal);
+
+        cartItemsEl.innerHTML = "";
+        cartEmptyEl.style.display = cart.length ? "none" : "block";
+
+        for (const item of cart) {
+          const li = document.createElement("li");
+          li.className = "cart-item";
+          li.innerHTML =
+            "<img src=\"" + item.image + "\" alt=\"" + item.name + " in cart\" loading=\"lazy\" decoding=\"async\">" +
+            "<div>" +
+              "<h4>" + item.name + "</h4>" +
+              "<p>" + money.format(item.price) + " each • " + money.format(item.price * item.qty) + " total</p>" +
+            "</div>" +
+            "<div class=\"cart-actions\">" +
+              "<button type=\"button\" class=\"icon-btn\" data-action=\"decrement\" data-id=\"" + item.id + "\" aria-label=\"Decrease quantity\">−</button>" +
+              "<span class=\"qty-chip\" aria-label=\"Quantity\">" + item.qty + "</span>" +
+              "<button type=\"button\" class=\"icon-btn\" data-action=\"increment\" data-id=\"" + item.id + "\" aria-label=\"Increase quantity\">+</button>" +
+              "<button type=\"button\" class=\"remove-btn\" data-action=\"remove\" data-id=\"" + item.id + "\">Remove</button>" +
+            "</div>";
+          cartItemsEl.appendChild(li);
+        }
+      }
+
+      document.addEventListener("click", function (event) {
+        const addBtn = event.target.closest(".add-to-cart");
+        if (addBtn) {
+          const product = {
+            id: addBtn.dataset.id,
+            name: addBtn.dataset.name,
+            price: Number(addBtn.dataset.price),
+            image: addBtn.dataset.image
+          };
+          addItem(product);
+          return;
+        }
+
+        const actionBtn = event.target.closest("[data-action][data-id]");
+        if (actionBtn) {
+          const id = actionBtn.dataset.id;
+          const action = actionBtn.dataset.action;
+          const item = cart.find((entry) => entry.id === id);
+          if (!item) return;
+
+          if (action === "increment") {
+            updateItemQuantity(id, item.qty + 1);
+          } else if (action === "decrement") {
+            updateItemQuantity(id, item.qty - 1);
+          } else if (action === "remove") {
+            removeItem(id);
+          }
+        }
+      });
+
+      clearCartBtn.addEventListener("click", clearCart);
+      renderCart();
+    })();
+  </script>
 </body>
 </html>
