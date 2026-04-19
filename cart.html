@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart | StyleNest</title>
+  <meta name="description" content="View and manage your StyleNest cart before checkout.">
+  <style>
+    :root {
+      --bg: #f7f7f7;
+      --surface: #ffffff;
+      --text: #1f1f1f;
+      --muted: #666666;
+      --border: #e8e8e8;
+      --primary: #111111;
+      --accent: #d35400;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .container { width: min(1050px, 92%); margin: 0 auto; }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+    }
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .brand { font-size: 1.25rem; font-weight: 800; text-decoration: none; color: var(--text); }
+    .brand span { color: var(--accent); }
+    .nav-links { display: flex; gap: 14px; flex-wrap: wrap; }
+    .nav-links a { text-decoration: none; color: var(--muted); font-weight: 600; }
+    .section { padding: 36px 0 52px; }
+    h1 { margin-bottom: 8px; }
+    .subtitle { color: var(--muted); margin-bottom: 20px; }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .cart-items {
+      list-style: none;
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .cart-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: 76px 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .cart-item img {
+      width: 76px;
+      height: 76px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .cart-item h3 { font-size: 1.02rem; margin-bottom: 4px; }
+    .cart-item p { color: var(--muted); font-size: 0.9rem; }
+    .actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .chip {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      min-width: 52px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    .icon-btn, .btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      border-radius: 999px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: 600;
+    }
+    .icon-btn { width: 32px; height: 32px; line-height: 1; font-size: 1rem; }
+    .btn { padding: 10px 16px; }
+    .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn-danger { background: #fff5f5; border-color: #f5c4c4; color: #a62d2d; }
+    .summary {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      display: grid;
+      gap: 10px;
+    }
+    .row { display: flex; justify-content: space-between; }
+    .footer-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .empty { color: var(--muted); margin-bottom: 12px; }
+    @media (max-width: 720px) {
+      .cart-item { grid-template-columns: 1fr; }
+      .actions { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="index.html">Style<span>Nest</span></a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="index.html">Shop</a>
+        <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
+        <a href="checkout.html">Checkout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <h1>Your Cart</h1>
+      <p class="subtitle">This dedicated cart file contains all cart content and actions.</p>
+      <div class="panel">
+        <p id="empty" class="empty">Your cart is currently empty.</p>
+        <ul id="cart-items" class="cart-items" aria-live="polite"></ul>
+        <div class="summary">
+          <div class="row"><span>Total Items</span><strong id="total-items">0</strong></div>
+          <div class="row"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
+          <div class="footer-actions">
+            <a href="index.html" class="btn">Continue Shopping</a>
+            <button id="clear-cart" type="button" class="btn btn-danger">Clear Cart</button>
+            <a id="checkout-btn" href="checkout.html" class="btn btn-primary">Proceed to Checkout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="ecommerce.js"></script>
+  <script>
+    (function () {
+      const store = window.StyleNestStore;
+      const cartItemsEl = document.getElementById("cart-items");
+      const emptyEl = document.getElementById("empty");
+      const totalItemsEl = document.getElementById("total-items");
+      const subtotalEl = document.getElementById("subtotal");
+      const clearCartBtn = document.getElementById("clear-cart");
+      const checkoutBtn = document.getElementById("checkout-btn");
+
+      function render() {
+        const cart = store.getCart();
+        const totals = store.getCartTotals(cart);
+        store.setNavCartCount();
+        totalItemsEl.textContent = String(totals.items);
+        subtotalEl.textContent = store.formatMoney(totals.subtotal);
+        cartItemsEl.innerHTML = "";
+        emptyEl.style.display = cart.length ? "none" : "block";
+        checkoutBtn.style.pointerEvents = cart.length ? "auto" : "none";
+        checkoutBtn.style.opacity = cart.length ? "1" : "0.5";
+
+        cart.forEach(function (item) {
+          const li = document.createElement("li");
+          li.className = "cart-item";
+          li.innerHTML =
+            "<img src=\"" + item.image + "\" alt=\"" + item.name + " product image\">" +
+            "<div><h3>" + item.name + "</h3><p>" + store.formatMoney(item.price) + " each • " + store.formatMoney(item.price * item.qty) + " total</p></div>" +
+            "<div class=\"actions\">" +
+              "<button type=\"button\" class=\"icon-btn\" data-action=\"dec\" data-id=\"" + item.id + "\" aria-label=\"Decrease quantity\">−</button>" +
+              "<span class=\"chip\">" + item.qty + "</span>" +
+              "<button type=\"button\" class=\"icon-btn\" data-action=\"inc\" data-id=\"" + item.id + "\" aria-label=\"Increase quantity\">+</button>" +
+              "<button type=\"button\" class=\"btn btn-danger\" data-action=\"remove\" data-id=\"" + item.id + "\">Remove</button>" +
+            "</div>";
+          cartItemsEl.appendChild(li);
+        });
+      }
+
+      document.addEventListener("click", function (event) {
+        const actionEl = event.target.closest("[data-action][data-id]");
+        if (!actionEl) return;
+
+        const id = actionEl.dataset.id;
+        const action = actionEl.dataset.action;
+        const item = store.getCart().find(function (entry) { return entry.id === id; });
+        if (!item) return;
+
+        if (action === "inc") {
+          store.updateCartItemQuantity(id, item.qty + 1);
+        } else if (action === "dec") {
+          store.updateCartItemQuantity(id, item.qty - 1);
+        } else if (action === "remove") {
+          store.removeCartItem(id);
+        }
+        render();
+      });
+
+      clearCartBtn.addEventListener("click", function () {
+        store.clearCart();
+        render();
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | StyleNest</title>
+  <meta name="description" content="Secure checkout with M-Pesa payment option at StyleNest.">
+  <style>
+    :root {
+      --bg: #f7f7f7;
+      --surface: #ffffff;
+      --text: #1f1f1f;
+      --muted: #666666;
+      --border: #e8e8e8;
+      --primary: #111111;
+      --success: #1f7a1f;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .container { width: min(1080px, 92%); margin: 0 auto; }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+    }
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .brand { font-size: 1.25rem; font-weight: 800; text-decoration: none; color: var(--text); }
+    .nav-links { display: flex; gap: 14px; flex-wrap: wrap; }
+    .nav-links a { text-decoration: none; color: var(--muted); font-weight: 600; }
+    .layout {
+      padding: 34px 0 56px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 16px;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    h1 { margin-bottom: 8px; }
+    .subtitle { color: var(--muted); margin-bottom: 18px; }
+    .field { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; }
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+    }
+    textarea { min-height: 76px; resize: vertical; }
+    .payment-options {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .payment-options label {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin: 0;
+      font-weight: 500;
+    }
+    .btn {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .btn-ghost { background: #fff; border-color: var(--border); color: var(--text); }
+    .status { margin-top: 10px; font-size: 0.92rem; color: var(--success); }
+    .summary-list { list-style: none; display: grid; gap: 10px; margin-bottom: 12px; }
+    .summary-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .summary-row { display: flex; justify-content: space-between; margin-top: 8px; }
+    .muted { color: var(--muted); font-size: 0.92rem; }
+    .hidden { display: none; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="index.html">StyleNest</a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="index.html">Shop</a>
+        <a href="cart.html">Cart (<span data-cart-count>0</span>)</a>
+        <a href="checkout.html">Checkout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container layout">
+    <section class="panel">
+      <h1>Checkout</h1>
+      <p class="subtitle">Complete your details and pay. M-Pesa payment is supported.</p>
+      <form id="checkout-form">
+        <div class="field">
+          <label for="full-name">Full Name</label>
+          <input id="full-name" name="fullName" required>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required>
+        </div>
+        <div class="field">
+          <label for="phone">Phone Number</label>
+          <input id="phone" name="phone" placeholder="+2547XXXXXXXX" required>
+        </div>
+        <div class="field">
+          <label for="address">Delivery Address</label>
+          <textarea id="address" name="address" required></textarea>
+        </div>
+
+        <div class="field">
+          <label>Payment Method</label>
+          <div class="payment-options">
+            <label><input type="radio" name="paymentMethod" value="mpesa" checked> M-Pesa</label>
+            <label><input type="radio" name="paymentMethod" value="card"> Card (simulated)</label>
+          </div>
+        </div>
+
+        <div id="mpesa-panel" class="field">
+          <label for="mpesa-phone">M-Pesa Number</label>
+          <input id="mpesa-phone" placeholder="+2547XXXXXXXX">
+          <p class="muted">An STK push is simulated and resolved by the callback route.</p>
+        </div>
+
+        <button id="place-order-btn" type="submit" class="btn btn-primary">Place Order</button>
+        <a href="cart.html" class="btn btn-ghost">Back to Cart</a>
+        <p id="status-msg" class="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <aside class="panel">
+      <h2>Order Summary</h2>
+      <p class="muted" style="margin-bottom:12px;">Review your cart before payment.</p>
+      <p id="empty-summary" class="muted">Your cart is empty. Add products before checkout.</p>
+      <ul id="summary-list" class="summary-list"></ul>
+      <div class="summary-row"><span>Total Items</span><strong id="sum-items">0</strong></div>
+      <div class="summary-row"><span>Subtotal</span><strong id="sum-subtotal">$0.00</strong></div>
+    </aside>
+  </main>
+
+  <script src="ecommerce.js"></script>
+  <script>
+    (function () {
+      const store = window.StyleNestStore;
+      const summaryList = document.getElementById("summary-list");
+      const sumItems = document.getElementById("sum-items");
+      const sumSubtotal = document.getElementById("sum-subtotal");
+      const emptySummary = document.getElementById("empty-summary");
+      const form = document.getElementById("checkout-form");
+      const statusMsg = document.getElementById("status-msg");
+      const placeOrderBtn = document.getElementById("place-order-btn");
+      const mpesaPanel = document.getElementById("mpesa-panel");
+
+      function renderSummary() {
+        const cart = store.getCart();
+        const totals = store.getCartTotals(cart);
+        store.setNavCartCount();
+
+        summaryList.innerHTML = "";
+        emptySummary.style.display = cart.length ? "none" : "block";
+        sumItems.textContent = String(totals.items);
+        sumSubtotal.textContent = store.formatMoney(totals.subtotal);
+        placeOrderBtn.disabled = !cart.length;
+        placeOrderBtn.style.opacity = cart.length ? "1" : "0.6";
+
+        cart.forEach(function (item) {
+          const li = document.createElement("li");
+          li.className = "summary-item";
+          li.innerHTML = "<span>" + item.name + " × " + item.qty + "</span><strong>" + store.formatMoney(item.qty * item.price) + "</strong>";
+          summaryList.appendChild(li);
+        });
+      }
+
+      function selectedPaymentMethod() {
+        const checked = form.querySelector("input[name='paymentMethod']:checked");
+        return checked ? checked.value : "mpesa";
+      }
+
+      function handlePaymentMethodUI() {
+        const method = selectedPaymentMethod();
+        mpesaPanel.classList.toggle("hidden", method !== "mpesa");
+      }
+
+      form.addEventListener("change", function (event) {
+        if (event.target.name === "paymentMethod") {
+          handlePaymentMethodUI();
+        }
+      });
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const cart = store.getCart();
+        if (!cart.length) {
+          statusMsg.textContent = "Cart is empty. Add products first.";
+          return;
+        }
+
+        const method = selectedPaymentMethod();
+        const mpesaPhone = document.getElementById("mpesa-phone").value.trim();
+        if (method === "mpesa" && !mpesaPhone) {
+          statusMsg.textContent = "Enter an M-Pesa number to proceed.";
+          return;
+        }
+
+        const totals = store.getCartTotals(cart);
+        const orderId = store.generateReference("ORDER");
+        const paymentRef = store.generateReference(method.toUpperCase());
+
+        const order = {
+          orderId: orderId,
+          status: "pending",
+          paymentMethod: method,
+          paymentReference: paymentRef,
+          amount: totals.subtotal,
+          items: cart,
+          customer: {
+            fullName: document.getElementById("full-name").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            phone: document.getElementById("phone").value.trim(),
+            address: document.getElementById("address").value.trim(),
+            mpesaPhone: mpesaPhone
+          },
+          createdAt: new Date().toISOString()
+        };
+
+        store.saveLastOrder(order);
+        statusMsg.textContent = method === "mpesa"
+          ? "Simulating M-Pesa STK push... redirecting to callback route."
+          : "Simulating card payment... redirecting to callback route.";
+
+        setTimeout(function () {
+          const callbackUrl =
+            "callback.html?orderId=" + encodeURIComponent(orderId) +
+            "&status=success" +
+            "&paymentMethod=" + encodeURIComponent(method) +
+            "&paymentRef=" + encodeURIComponent(paymentRef);
+          window.location.href = callbackUrl;
+        }, 1400);
+      });
+
+      handlePaymentMethodUI();
+      renderSummary();
+    })();
+  </script>
+</body>
+</html>
